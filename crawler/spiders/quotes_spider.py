@@ -4,16 +4,17 @@ import time
 #import urllib.parse as urlparse
 import requests
 #import geocoder
-#from selenium import webdriver
+from selenium import webdriver
 #from selenium.webdriver.support.select import Select
-#from selenium.webdriver.firefox.options import Options
-#from selenium.common.exceptions import StaleElementReferenceException
-#from selenium.common.exceptions import NoSuchElementException        
+from selenium.webdriver.firefox.options import Options
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException        
 #from fake_useragent import UserAgent
 #import random
 #import traceback
 import json
 import sys
+import linecache
 
 class Binance:
     base_url = "https://api.binance.com/api/v1/ticker/price?symbol="
@@ -105,6 +106,8 @@ class CryptoBridge:
     def get_last_price(self, coin_ticker):
         req_url = self.base_url + coin_ticker + self.param
         response = requests.get(url=req_url) # özel durumlar için url yanına ,param=param parametresi de eklenebilir
+        if response.status_code != 200:
+            return -1
         data = response.json() # Check the JSON Response Content documentation below
         if "last" in data:
             #print(data["last"])
@@ -188,6 +191,8 @@ class SouthExchange:
         try:
             req_url = self.base_url + coin_ticker + self.param
             response = requests.get(url=req_url) # özel durumlar için url yanına ,param=param parametresi de eklenebilir
+            if len(response.text.replace('"','')) == 0:
+                return -1
             data = response.json() # Check the JSON Response Content documentation below
             if "Last" in data:
                 #print(data["Last"])
@@ -218,26 +223,33 @@ class Stex:
 #from lxml.html.clean import Cleaner
 class Coin_Crawler(scrapy.Spider):           
     name = "coin_crawler"
-    cryptoCompareUrl = "https://masternodes.pro/apiv2/coin/stats/"
-    #def __init__(self):
-        #self.options = Options()
-        #self.options.log.level = 'fatal'
-        #self.driver = webdriver.Firefox()
+    cryptoCompareUrl = "https://masternodes.pro/apiv2/coins/stats?currency=null"
+    masternodes_pro_base_url= "https://masternodes.pro/statistics"
+    masternodes_pro_coin_url = "https://masternodes.pro/stats/"
+    param = "/statistics"
+    data = {}
+
+    def __init__(self):
+        self.options = Options()
+        self.options.log.level = 'fatal'
+        self.driver = webdriver.PhantomJS()
 
     def get_crypto_compare_coin_stats(self, coinTicker):
-        req_url = self.cryptoCompareUrl + coinTicker
+        req_url = self.cryptoCompareUrl
         response = requests.get(url=req_url) # özel durumlar için url yanına ,param=param parametresi de eklenebilir
         data = response.json() # Check the JSON Response Content documentation below
-        print(data['stats']['cmc']['price_btc'])
-        return data
+        for coin in response.data:
+            if coin['coin'] == coinTicker:
+                return data
+        
 
-    #def stale_aware_for_action(self, action):
-    #    while(True):
-    #        try:
-    #            action()
-    #            break
-    #        except StaleElementReferenceException:
-    #            continue
+    def stale_aware_for_action(self, action):
+        while(True):
+            try:
+                action()
+                break
+            except StaleElementReferenceException:
+                continue
             
     def start_requests(self):
         urls = [
@@ -261,6 +273,19 @@ class Coin_Crawler(scrapy.Spider):
             "stocksexchange": Stex
         }
         return switcher[argument]
+    
+    def PrintException(self):
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        filename = f.f_code.co_filename
+        linecache.checkcache(filename)
+        line = linecache.getline(filename, lineno, f.f_globals)
+        print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+
+    
+    
+    
     def parse(self, response):
         registrations = json.loads(response.text)
         for registration in registrations:
@@ -270,7 +295,6 @@ class Coin_Crawler(scrapy.Spider):
                 counter = 0
                 xchg_list = registration['selectxchange'].split(',')
                 for xchg in xchg_list:
-                    #print('\t'* 2 + registration['coinName'].upper() + '\t'* 3 + xchg + '\n')
                     exchange_class = self.switcher(xchg)()
                     price = exchange_class.get_last_price(registration['coinTicker'])
                     print('\n')
@@ -285,11 +309,24 @@ class Coin_Crawler(scrapy.Spider):
                         print("There is not any price info about {} in {}".format(registration['coinName'].upper(), xchg.upper()))
                         print('=================================================')
                     print('\n' * 2)
-                coin_details = self.get_crypto_compare_coin_stats(registration['coinTicker'])
-                
+
+                self.driver.get(self.masternodes_pro_base_url)
+                time.sleep(5)
+                coin_link = self.driver.find_element_by_xpath('//*[@id="stats"]/tbody/tr/td/a[contains(text(), "{}")]'.format(registration['coinTicker']))
+                coin_row = coin_link.find_element_by_xpath('./../..')
+                percentChange24h = coin_row.find_element_by_xpath('./td[5]/span').text.replace(' ','').replace('%', '')
+                self.driver.get(self.masternodes_pro_coin_url + registration['coinTicker'] + self.param)
+                time.sleep(5)
+                worth = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[1]/div[4]/mnp-data-box/div/div/div/div[1]/h3').text.replace(' ', '')
+                dailyIncome = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[4]/div[1]/mnp-data-box/div/div/div/div[1]/h3/small').text.replace(' ', '')
+                monthlyIncome = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[4]/div[3]/mnp-data-box/div/div/div/div[1]/h3/small').text.replace(' ', '')
+                yearlyIncome = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[4]/div[4]/mnp-data-box/div/div/div/div[1]/h3/small').text.replace(' ', '')
+                roi = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[1]/div[1]/mnp-data-box/div/div/div/div[1]/h3').text.replace(' ', '').replace('%', '')
+                masternode_count = self.driver.find_element_by_xpath('//*[@id="mainbody"]/app-root/mnp-stats-base/div/div/mnp-advanced-stats/div/div[1]/div[1]/div[4]/mnp-data-box/div/div/div/div[1]').text.replace(' ', '')
+
                 average_price = total_price / counter
                 print("**** {} Average Price: {} ****".format(registration['coinName'].upper(), average_price))
-                data = {
+                self.data = {
                             "registration_id": registration["id"],
                             "coinTicker": registration["coinTicker"],
                             "coinName": registration["coinName"],
@@ -297,24 +334,27 @@ class Coin_Crawler(scrapy.Spider):
                             "currentPrice": average_price,
                             "collateralAmount": registration["collateralAmount"],
                             "isCrawled": True,
-                            "worth": coin_details['stats']['masterNodeWorth'],
-                            "dailyIncome": coin_details['stats']['income']['daily'],
-                            "monthlyIncome": coin_details['stats']['income']['monthly'],
-                            "yearlyIncome": coin_details['stats']['income']['yearly'],
-                            "roi": coin_details['stats']['roi'],
-                            "masternode_count": coin_details['advStats']['masterNodeCount'],
-                            "percentChange24h": coin_details['stats']['cmc']['percent_change_24h'],
-                            "rank": coin_details['stats']['cmc']['rank'],
+                            "worth": worth,
+                            "dailyIncome": dailyIncome.replace(registration['coinTicker'].lower(), '').replace(registration['coinTicker'].upper(), '').replace(',','.'),
+                            "monthlyIncome": monthlyIncome.replace(registration['coinTicker'].lower(), '').replace(registration['coinTicker'].upper(), '').replace(',','.'),
+                            "yearlyIncome": yearlyIncome.replace(registration['coinTicker'].lower(), '').replace(registration['coinTicker'].upper(), '').replace(',','.'),
+                            "roi": roi,
+                            "masternode_count": masternode_count,
+                            "percentChange24h": percentChange24h,
+                            # "rank": coin_details['stats']['cmc']['rank'],
                             "status": None,
                             "lastCheckTime": str(int(time.time()))
                         }
-                headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-                req_to_insert = requests.post('http://localhost:3000/registered_coin', data=json.dumps(data), headers=headers)
-                print(req_to_insert)
+                print(self.data)
+                
             except:
-                print(sys.exc_info()[0])
+                self.PrintException()
                 print(registration['coinTicker'])
                 continue
+            finally:
+                headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+                req_to_insert = requests.post('http://localhost:3000/registered_coin', data=json.dumps(self.data), headers=headers)
+                print(req_to_insert.text)
+        self.driver.close()    
         print("@@@@@@@@    sleeping 20 secs    @@@@@@@@")
-                
             
