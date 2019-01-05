@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException        
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from pyvirtualdisplay import Display
 
 #from fake_useragent import UserAgent
 #import random
@@ -263,6 +264,8 @@ class Coin_Crawler(scrapy.Spider):
         return driver
         
     def __init__(self):
+        display = Display(visible=0, size=(1366, 768))
+        display.start()
         self.options = Options()
         self.options.add_argument("headless")
         self.options.add_argument('--disable-gpu')
@@ -416,6 +419,7 @@ class Coin_Crawler(scrapy.Spider):
                 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
                 req_to_insert = requests.post('http://localhost:3000/registered_coin', data=json.dumps(self.data), headers=headers)
                 print(req_to_insert.text)
-        self.driver.close()    
+        self.driver.close()
+        display.stop()
         print("@@@@@@@@    sleeping 20 secs    @@@@@@@@")
             
