@@ -6,9 +6,11 @@ import requests
 #import geocoder
 from selenium import webdriver
 #from selenium.webdriver.support.select import Select
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import NoSuchElementException        
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 #from fake_useragent import UserAgent
 #import random
 #import traceback
@@ -224,15 +226,66 @@ class Stex:
 class Coin_Crawler(scrapy.Spider):           
     name = "coin_crawler"
     cryptoCompareUrl = "https://masternodes.pro/apiv2/coins/stats?currency=null"
-    masternodes_pro_base_url= "https://masternodes.pro/statistics"
+    masternodes_pro_base_url= "https://masternodes.pro/"
+    masternodes_pro_base_url2= "https://masternodes.pro/statistics"
     masternodes_pro_coin_url = "https://masternodes.pro/stats/"
     param = "/statistics"
     data = {}
 
+    def phantom_settings_function(self):
+        # PhantomJS settings
+        phantom_settings = dict(DesiredCapabilities.PHANTOMJS)
+        phantom_settings['phantomjs.page.settings.userAgent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
+        phantom_settings['userAgent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
+        phantom_settings['User-Agent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
+        phantom_settings['phantomjs.page.settings.javascriptEnabled'] = True,   
+        phantom_settings['phantomjs.page.settings.loadImages'] = True,
+        phantom_settings['browserName'] = 'Google Chrome'
+        phantom_settings['platformName'] = 'Linux'
+        return phantom_settings
+        
+    def init_phantomjs_driver(self, *args, **kwargs):
+    
+        headers = { 'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language':'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0',
+            'Connection': 'keep-alive'
+        }
+    
+        for key, value in enumerate(headers):
+            webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.{}'.format(key)] = value
+    
+        webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+    
+        driver =  webdriver.PhantomJS(*args, **kwargs)
+        driver.set_window_size(1400,1000)
+        print(webdriver.DesiredCapabilities.PHANTOMJS)
+        return driver
+        
     def __init__(self):
         self.options = Options()
-        self.options.log.level = 'fatal'
-        self.driver = webdriver.PhantomJS()
+        self.options.add_argument("headless")
+        self.options.add_argument('--disable-gpu')
+        self.options.headless = True
+        self.options.set_headless(headless=True)
+        self.options.add_argument("headless") # Runs Chrome in headless mode.
+        self.options.add_argument('--no-sandbox') # Bypass OS security model
+        self.options.add_argument('start-maximized') # 
+        self.options.add_argument('disable-infobars')
+        self.options.add_argument("--disable-extensions")
+        self.headers = {
+            'Accept':'*/*',
+            'Accept-Encoding':'gzip, deflate, sdch',
+            'Accept-Language':'en-US,en;q=0.8',
+            'Cache-Control':'max-age=0',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+        }
+        for key, value in enumerate(self.headers):
+            capability_key = 'phantomjs.page.customHeaders.{}'.format(key)
+            webdriver.DesiredCapabilities.PHANTOMJS[capability_key] = value
+        self.driver = webdriver.Chrome(chrome_options=self.options)#(desired_capabilities=self.phantom_settings_function(),service_args=['--ignore-ssl-errors=true', '--ssl-protocol=tlsv1'])
+        #self.driver = self.init_phantomjs_driver()
+        #self.driver = webdriver.PhantomJS(desired_capabilities =self.phantom_settings_function(), service_args=['--ignore-ssl-errors=true', '--ssl-protocol=tlsv1'])
 
     def get_crypto_compare_coin_stats(self, coinTicker):
         req_url = self.cryptoCompareUrl
@@ -253,7 +306,7 @@ class Coin_Crawler(scrapy.Spider):
             
     def start_requests(self):
         urls = [
-            'http://localhost:3000/registration'
+            'http://localhost:3000/registration/IncludePassive'
         ]
         
         for url in urls:
@@ -311,7 +364,15 @@ class Coin_Crawler(scrapy.Spider):
                     print('\n' * 2)
 
                 self.driver.get(self.masternodes_pro_base_url)
+                self.driver.implicitly_wait(10)
+                self.driver.get(self.masternodes_pro_base_url2)
+                self.driver.set_window_size(1120, 550)
                 time.sleep(5)
+                print(self.driver.page_source)
+                self.driver.set_window_size(1400,1000)
+                self.driver.maximize_window()
+                time.sleep(5)
+                self.driver.save_screenshot('out.png');
                 coin_link = self.driver.find_element_by_xpath('//*[@id="stats"]/tbody/tr/td/a[contains(text(), "{}")]'.format(registration['coinTicker']))
                 coin_row = coin_link.find_element_by_xpath('./../..')
                 percentChange24h = coin_row.find_element_by_xpath('./td[5]/span').text.replace(' ','').replace('%', '')

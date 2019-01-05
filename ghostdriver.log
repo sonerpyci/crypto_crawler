@@ -1,5 +1,27 @@
-[INFO  - 2018-12-25T18:57:34.395Z] GhostDriver - Main - running on port 35099
-[INFO  - 2018-12-25T18:57:35.188Z] Session [f0df25f0-0876-11e9-960e-ed0e9a17d9bd] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1","webSecurityEnabled":true}
-[INFO  - 2018-12-25T18:57:35.188Z] Session [f0df25f0-0876-11e9-960e-ed0e9a17d9bd] - page.customHeaders:  - {}
-[INFO  - 2018-12-25T18:57:35.188Z] Session [f0df25f0-0876-11e9-960e-ed0e9a17d9bd] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
-[INFO  - 2018-12-25T18:57:35.188Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: f0df25f0-0876-11e9-960e-ed0e9a17d9bd
+[INFO  - 2018-12-31T04:24:18.472Z] GhostDriver - Main - running on port 42855
+[INFO  - 2018-12-31T04:24:19.414Z] Session [f1095230-0cb3-11e9-82ff-0dc39e533058] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36","webSecurityEnabled":true,"userName":"","password":""}
+[INFO  - 2018-12-31T04:24:19.415Z] Session [f1095230-0cb3-11e9-82ff-0dc39e533058] - page.customHeaders:  - {"Accept":"text/html, application/xhtml+xml, application/xml;q=0.9","Accept-Language":"fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5","Cache-Control":"max-age=0","Connection":"keep-alive","Referer":"https://masternodes.pro/","User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36"}
+[INFO  - 2018-12-31T04:24:19.415Z] Session [f1095230-0cb3-11e9-82ff-0dc39e533058] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"},"phantomjs.page.customHeaders.Accept":"text/html, application/xhtml+xml, application/xml;q=0.9","phantomjs.page.customHeaders.Accept-Language":"fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5","phantomjs.page.customHeaders.User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36","phantomjs.page.customHeaders.Connection":"keep-alive","phantomjs.page.settings.userAgent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36","phantomjs.page.settings.javascriptEnabled":true,"phantomjs.page.settings.loadImages":true,"phantomjs.page.settings.localToRemoteUrlAccessEnabled":false,"phantomjs.page.settings.userName":"","phantomjs.page.settings.password":"","phantomjs.page.settings.XSSAuditingEnabled":false,"phantomjs.page.settings.webSecurityEnabled":true,"phantomjs.page.settings.resourceTimeout":30000,"phantomjs.page.settings.onResourceTimeout":false,"phantomjs.page.customHeaders.Cache-Control":"max-age=0","phantomjs.page.customHeaders.Referer":"https://masternodes.pro/"}
+[INFO  - 2018-12-31T04:24:19.415Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: f1095230-0cb3-11e9-82ff-0dc39e533058
+[ERROR - 2018-12-31T04:24:28.576Z] Session [f1095230-0cb3-11e9-82ff-0dc39e533058] - page.onError - msg: TypeError: ,0 is not iterable!
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2018-12-31T04:24:28.576Z] Session [f1095230-0cb3-11e9-82ff-0dc39e533058] - page.onError - stack:
+  exports (https://masternodes.pro/polyfills.62ff759e7517db1c0938.bundle.js:1)
+  (anonymous function) (https://masternodes.pro/polyfills.62ff759e7517db1c0938.bundle.js:1)
+  (anonymous function) (https://masternodes.pro/polyfills.62ff759e7517db1c0938.bundle.js:1)
+  t (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  (anonymous function) (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  (anonymous function) (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  M4fF (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  t (https://masternodes.pro/inline.318b50c57b4eba3d437b.bundle.js:1)
+  x35b (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  t (https://masternodes.pro/inline.318b50c57b4eba3d437b.bundle.js:1)
+  (anonymous function) (https://masternodes.pro/main.9797395023ec40702ba2.bundle.js:1)
+  t (https://masternodes.pro/inline.318b50c57b4eba3d437b.bundle.js:1)
+  webpackJsonp (https://masternodes.pro/inline.318b50c57b4eba3d437b.bundle.js:1)
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2018-12-31T04:24:39.673Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1546230279649
+
+  phantomjs://platform/console++.js:263 in error
