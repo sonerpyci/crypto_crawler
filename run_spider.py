@@ -16,4 +16,4 @@ if __name__ == '__main__':
         print("Crawler Running Normal Mode.\n==>\t You can add 'development' word to reach specific Process details\n")
     while True:
         Thread(target = run_crawler).start()
-        time.sleep(50)
+        time.sleep(1200) # 20 minutes
