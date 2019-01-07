@@ -264,8 +264,8 @@ class Coin_Crawler(scrapy.Spider):
         return driver
         
     def __init__(self):
-        display = Display(visible=0, size=(1366, 768))
-        display.start()
+        self.display = Display(visible=0, size=(1366, 768))
+        self.display.start()
         self.options = Options()
         self.options.add_argument("headless")
         self.options.add_argument('--disable-gpu')
@@ -420,6 +420,6 @@ class Coin_Crawler(scrapy.Spider):
                 req_to_insert = requests.post('http://localhost:3000/registered_coin', data=json.dumps(self.data), headers=headers)
                 print(req_to_insert.text)
         self.driver.close()
-        display.stop()
+        self.display.stop()
         print("@@@@@@@@    sleeping 20 secs    @@@@@@@@")
             
