@@ -374,7 +374,7 @@ class Coin_Crawler(scrapy.Spider):
                 self.driver.get(self.masternodes_pro_base_url2)
                 self.driver.set_window_size(1120, 550)
                 time.sleep(5)
-                print(self.driver.page_source)
+                #print(self.driver.page_source)
                 self.driver.set_window_size(1400,1000)
                 self.driver.maximize_window()
                 time.sleep(5)
