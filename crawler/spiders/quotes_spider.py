@@ -30,6 +30,7 @@ class Binance:
             #print(data['price'])
             return data['price']
         else:
+            print("No Currency Found Error in Binance")
             return -1
 
 
@@ -48,7 +49,7 @@ class Bittrex:
                 else:
                     return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in Bittrex")
             return -1
 
 class BtcAlpha:
@@ -68,7 +69,7 @@ class BtcAlpha:
             else:
                 return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in BtcAlpha")
             return -1
 
 class CoinExchange:
@@ -99,7 +100,7 @@ class CoinExchange:
             else:
                 return -1
         except:
-            print('"No currency Found" Error')
+            print('No currency Found Error in CoinExchange')
             return -1
 
 
@@ -116,6 +117,7 @@ class CryptoBridge:
             #print(data["last"])
             return data["last"]
         else:
+            print("No Currency Found Error in CryptoBridge")
             return -1
 
 
@@ -139,7 +141,7 @@ class Cryptopia:
             else:
                 return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in Cryptopia")
             return -1
 
 
@@ -163,7 +165,7 @@ class Graviex:
             else:
                 return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in Graviex")
             return -1
         
 
@@ -183,7 +185,7 @@ class Mercatox:
             else:
                 return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in Mercatox")
             return -1
 
 
@@ -203,7 +205,7 @@ class SouthExchange:
             else:
                 return -1
         except:
-            print("No Currency Found Error")
+            print("No Currency Found Error in SouthExchange")
             return -1
 
 class Stex:
@@ -221,6 +223,7 @@ class Stex:
                     return coin['last']
             return -1
         except:
+            print("No Currency Found Error in Stex")
             return -1
 
 #from lxml.html.clean import Cleaner
