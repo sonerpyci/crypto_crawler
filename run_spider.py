@@ -4,6 +4,11 @@ import sys
 from threading import Thread
 
 def run_crawler():
+
+	 system('pkill chromedriver')
+	 system('pkill chrome')
+	 system('pkill Xvfb')
+
     if "development" in sys.argv:
         system('scrapy crawl coin_crawler') # for easy debug
     else:
